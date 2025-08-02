@@ -11,17 +11,17 @@ import { Alert, Platform } from "react-native";
 
 // Import screens
 import LoginScreen from "./screens/LoginScreen";
-// import DashboardScreen from "./screens/DashboardScreen";
-// import AttendanceScreen from "./screens/AttendanceScreen";
-// import HistoryScreen from "./screens/HistoryScreen";
-// import ProfileScreen from "./screens/ProfileScreen";
-// import AdminScreen from "./screens/AdminScreen";
-// import LoadingScreen from "./screens/LoadingScreen";
+import DashboardScreen from "./screens/DashboardScreen";
+import AttendanceScreen from "./screens/AttendanceScreen";
+import HistoryScreen from "./screens/HistoryScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import LoadingScreen from "./screens/LoadingScreen";
 
 // Import context and services
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { AttendanceProvider } from "./context/AttendanceContext";
 import ApiService from "./services/ApiService";
+import AdminScreen from "./screens/AdminScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -70,7 +70,7 @@ function MainTabNavigator() {
         },
       })}
     >
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}
         options={{ title: "Dashboard" }}
@@ -96,7 +96,7 @@ function MainTabNavigator() {
           component={AdminScreen}
           options={{ title: "Admin Panel" }}
         />
-      )} */}
+      )}
     </Tab.Navigator>
   );
 }
@@ -114,9 +114,9 @@ function AuthStack() {
 function AppNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // if (isLoading) {
-  //   return <LoadingScreen />;
-  // }
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <NavigationContainer>
@@ -181,9 +181,9 @@ export default function App() {
     prepare();
   }, []);
 
-  // if (!isReady) {
-  //   return <LoadingScreen />;
-  // }
+  if (!isReady) {
+    return <LoadingScreen />;
+  }
 
   return (
     <AuthProvider>

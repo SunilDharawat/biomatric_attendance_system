@@ -363,6 +363,17 @@ class ApiService {
   async reportIssue(issue) {
     return this.post("/support/report-issue", issue);
   }
+
+  async getAttendanceReport(filters) {
+    return this.get("/admin/attendance-report", { params: filters });
+  }
+
+  async getEmployee() {
+    return this.get("/api/users");
+  }
+  async getDashboardData() {
+    return this.get("/api/reports/dashboard");
+  }
 }
 
 const apiServiceInstance = new ApiService();
