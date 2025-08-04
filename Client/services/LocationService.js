@@ -10,7 +10,7 @@ class LocationService {
 
     // Office coordinates (replace with actual office location)
     this.officeLocation = {
-      latitude: 22.7559262, // Bhopal coordinates - replace with your office
+      latitude: 22.7559262,
       longitude: 75.882972,
       radius: 100, // meters
     };

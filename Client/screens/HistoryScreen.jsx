@@ -32,6 +32,13 @@ const HistoryScreen = () => {
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const handleViewDetails = (record) => {
+    console.log("Selected record:", record);
+    setSelectedRecord(record);
+  };
+
   useEffect(() => {
     loadHistory();
   }, [selectedMonth, selectedYear]);
@@ -53,6 +60,60 @@ const HistoryScreen = () => {
       setCurrentPage((prev) => prev + 1);
     }
   };
+
+  // const renderAttendanceItem = ({ item }) => (
+  //   <View style={styles.attendanceItem}>
+  //     <View style={styles.dateContainer}>
+  //       <Text style={styles.dateText}>{moment(item.date).format("DD")}</Text>
+  //       <Text style={styles.monthText}>{moment(item.date).format("MMM")}</Text>
+  //       <Text style={styles.dayText}>{moment(item.date).format("ddd")}</Text>
+  //     </View>
+
+  //     <View style={styles.attendanceDetails}>
+  //       <View style={styles.statusContainer}>
+  //         <View
+  //           style={[
+  //             styles.statusDot,
+  //             { backgroundColor: getAttendanceStatusColor(item.status) },
+  //           ]}
+  //         />
+  //         <Text style={styles.statusText}>
+  //           {item.status?.toUpperCase() || "N/A"}
+  //         </Text>
+  //       </View>
+
+  //       <View style={styles.timeContainer}>
+  //         <View style={styles.timeItem}>
+  //           <Ionicons name="log-in" size={16} color="#4CAF50" />
+  //           <Text style={styles.timeText}>
+  //             {item.check_in_time
+  //               ? formatAttendanceTime(item.check_in_time)
+  //               : "--:--"}
+  //           </Text>
+  //         </View>
+  //         <View style={styles.timeItem}>
+  //           <Ionicons name="log-out" size={16} color="#FF9800" />
+  //           <Text style={styles.timeText}>
+  //             {item.check_out_time
+  //               ? formatAttendanceTime(item.check_out_time)
+  //               : "--:--"}
+  //           </Text>
+  //         </View>
+  //       </View>
+
+  //       {item.minutes_worked && (
+  //         <Text style={styles.workingHours}>
+  //           Working time: {Math.floor(item.minutes_worked / 60)}h{" "}
+  //           {item.minutes_worked % 60}m
+  //         </Text>
+  //       )}
+  //     </View>
+
+  //     <TouchableOpacity style={styles.moreButton}>
+  //       <Ionicons name="chevron-forward" size={20} color="#999" />
+  //     </TouchableOpacity>
+  //   </View>
+  // );
 
   const renderAttendanceItem = ({ item }) => (
     <View style={styles.attendanceItem}>
@@ -94,16 +155,19 @@ const HistoryScreen = () => {
           </View>
         </View>
 
-        {item.minutes_worked && (
+        {item.total_minutes && (
           <Text style={styles.workingHours}>
-            Working time: {Math.floor(item.minutes_worked / 60)}h{" "}
-            {item.minutes_worked % 60}m
+            Working time: {Math.floor(item.total_minutes / 60)}h{" "}
+            {item.total_minutes % 60}m
           </Text>
         )}
       </View>
 
-      <TouchableOpacity style={styles.moreButton}>
-        <Ionicons name="chevron-forward" size={20} color="#999" />
+      <TouchableOpacity
+        style={styles.moreButton}
+        onPress={() => handleViewDetails(item)}
+      >
+        <Ionicons name="chevron-forward" size={20} color="#fff" />
       </TouchableOpacity>
     </View>
   );
@@ -128,6 +192,10 @@ const HistoryScreen = () => {
               {monthlyStats.present_days || 0}
             </Text>
             <Text style={styles.statLabel}>Present</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{monthlyStats.half_days || 0}</Text>
+            <Text style={styles.statLabel}>Half Day</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>
@@ -215,6 +283,57 @@ const HistoryScreen = () => {
     </Modal>
   );
 
+  const renderDetailsModal = () => (
+    <Modal
+      visible={!!selectedRecord}
+      animationType="slide"
+      transparent
+      onRequestClose={() => setSelectedRecord(null)}
+    >
+      <View style={styles.detailsModalOverlay}>
+        <View style={styles.detailsModalContainer}>
+          <Text style={styles.detailsModalTitle}>Attendance Details</Text>
+
+          {selectedRecord && (
+            <>
+              <Text style={styles.detailsRow}>
+                <Text style={styles.detailsLabel}>Date: </Text>
+                {moment(selectedRecord.date).format("DD MMM YYYY")}
+              </Text>
+              <Text style={styles.detailsRow}>
+                <Text style={styles.detailsLabel}>Status: </Text>
+                {selectedRecord.status}
+              </Text>
+              <Text style={styles.detailsRow}>
+                <Text style={styles.detailsLabel}>Check In: </Text>
+                {formatAttendanceTime(selectedRecord.check_in_time)}
+              </Text>
+              <Text style={styles.detailsRow}>
+                <Text style={styles.detailsLabel}>Check Out: </Text>
+                {formatAttendanceTime(selectedRecord.check_out_time)}
+              </Text>
+              <Text style={styles.detailsRow}>
+                <Text style={styles.detailsLabel}>Minutes Worked: </Text>
+                {selectedRecord.total_minutes}
+              </Text>
+              <Text style={styles.detailsRow}>
+                <Text style={styles.detailsLabel}>Notes: </Text>
+                {selectedRecord.notes || "N/A"}
+              </Text>
+            </>
+          )}
+
+          <TouchableOpacity
+            style={styles.detailsCloseButton}
+            onPress={() => setSelectedRecord(null)}
+          >
+            <Text style={styles.detailsCloseButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
   const renderHeader = () => (
     <View style={styles.header}>
       <Text style={styles.headerTitle}>Attendance History</Text>
@@ -269,6 +388,7 @@ const HistoryScreen = () => {
       />
 
       {renderFilterModal()}
+      {renderDetailsModal()}
     </View>
   );
 };
@@ -318,7 +438,7 @@ const styles = StyleSheet.create({
   },
   statItem: {
     alignItems: "center",
-    width: "25%",
+    width: "20%",
     marginBottom: 12,
   },
   statValue: {
@@ -400,7 +520,13 @@ const styles = StyleSheet.create({
   },
 
   moreButton: {
-    paddingLeft: 8,
+    color: "#fff",
+    width: 32,
+    height: 32,
+    borderRadius: 16, // Makes it round
+    backgroundColor: "#2196F3", // Or any accent color
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   emptyContainer: {
@@ -507,6 +633,55 @@ const styles = StyleSheet.create({
 
   loadingFooter: {
     marginVertical: 16,
+  },
+
+  // renderDetails model
+  detailsModalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  detailsModalContainer: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    elevation: 4,
+  },
+
+  detailsModalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 12,
+    color: "#333",
+  },
+
+  detailsRow: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 6,
+  },
+
+  detailsLabel: {
+    fontWeight: "600",
+    color: "#333",
+  },
+
+  detailsCloseButton: {
+    marginTop: 16,
+    alignSelf: "flex-end",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: "#2196F3",
+  },
+
+  detailsCloseButtonText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 14,
   },
 });
 

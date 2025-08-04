@@ -292,7 +292,7 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.logoContainer}>
             <Ionicons name="business" size={60} color="#2196F3" />
           </View>
-          <Text style={styles.title}>Smart Attendance</Text>
+          <Text style={styles.title}>Sysassist Smart Attendance</Text>
           <Text style={styles.subtitle}>Sign in to your account</Text>
         </View>
 

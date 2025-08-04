@@ -374,39 +374,58 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   header: {
-    backgroundColor: "#2196F3",
-    padding: 20,
-    paddingTop: 40,
+    backgroundColor: "#007AFF", // fresher blue
+    marginTop: 10,
+    paddingHorizontal: 20,
+    paddingTop: 20, // more breathing room for status bar
+    paddingBottom: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
   },
+
   greetingContainer: {
     flex: 1,
   },
+
   greeting: {
-    color: "#fff",
+    color: "#FFFFFF",
     fontSize: 16,
-    opacity: 0.9,
+    opacity: 0.8,
+    letterSpacing: 0.5,
   },
+
   userName: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "bold",
+    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
+
   timeContainer: {
     alignItems: "flex-end",
   },
+
   currentTime: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "bold",
+    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "700",
+    letterSpacing: 0.5,
   },
+
   currentDate: {
-    color: "#fff",
+    color: "#FFFFFF",
     fontSize: 14,
-    opacity: 0.9,
+    opacity: 0.8,
+    letterSpacing: 0.3,
   },
+
   statusCard: {
     backgroundColor: "#fff",
     margin: 16,
@@ -543,7 +562,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginHorizontal: 16,
-    marginBottom: 32,
+    marginBottom: 80,
   },
   navCard: {
     backgroundColor: "#fff",

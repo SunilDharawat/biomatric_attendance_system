@@ -100,13 +100,52 @@
 //   const loadDashboardData = async () => {
 //     try {
 //       setLoading(true);
-//       const response = await ApiService.get("/api/reports/dashboard");
+//       console.log("Loading dashboard data...");
+//       const response = await ApiService.get("/reports/dashboard");
+//       console.log("Dashboard API Response:", response.data.monthly);
+
 //       if (response.data.success) {
-//         setDashboardStats(response.data.data);
+//         // setDashboardStats(response.data);
+//         setDashboardStats((prev) => ({
+//           ...prev,
+//           today: {
+//             total_checkins: response.data.today.total_checkins || 0,
+//             on_time: response.data.today.on_time || 0,
+//             late: response.data.today.late || 0,
+//             still_in_office: response.data.today.still_in_office || 0,
+//             unique_employees: response.data.today.unique_employees || 0,
+//           },
+//           monthly: {
+//             total_attendance: response.data.monthly.total_attendance || 0,
+//             active_employees: response.data.monthly.active_employees || 0,
+//             avg_working_minutes: response.data.monthly.avg_working_minutes || 0,
+//             total_late_days: response.data.monthly.total_late_days || 0,
+//           },
+//           trends: response.data.trends || [],
+//           departments: response.data.departments || [],
+//           late_arrivals: response.data.late_arrivals || [],
+//         }));
+//       } else {
+//         console.error("Dashboard API returned success: false");
+//         Alert.alert("Error", "Failed to load dashboard statistics");
 //       }
 //     } catch (error) {
 //       console.error("Error loading dashboard data:", error);
-//       Alert.alert("Error", "Failed to load dashboard statistics");
+//       if (error.response) {
+//         console.error("API Response Error:", error.response.data);
+//         Alert.alert(
+//           "Error",
+//           `API Error: ${
+//             error.response.data.message || "Failed to load dashboard statistics"
+//           }`
+//         );
+//       } else if (error.request) {
+//         console.error("Network Error:", error.request);
+//         Alert.alert("Error", "Network error. Please check your connection.");
+//       } else {
+//         console.error("Request Error:", error.message);
+//         Alert.alert("Error", "Failed to load dashboard statistics");
+//       }
 //     } finally {
 //       setLoading(false);
 //     }
@@ -114,38 +153,78 @@
 
 //   const loadEmployees = async () => {
 //     try {
-//       const response = await ApiService.get("/api/users");
+//       console.log("Loading employees...");
+//       const response = await ApiService.get("/users");
+//       console.log("Users API Response:", response.data.users);
+
 //       if (response.data.success) {
-//         setEmployees(response.data.data.users);
-//         setFilteredEmployees(response.data.data.users);
+//         setEmployees(response.data.users);
+//         setFilteredEmployees(response.data.users);
+//       } else {
+//         console.error("Users API returned success: false");
+//         Alert.alert("Error", "Failed to load employees");
 //       }
 //     } catch (error) {
 //       console.error("Error loading employees:", error);
-//       Alert.alert("Error", "Failed to load employees");
+//       if (error.response) {
+//         console.error("API Response Error:", error.response.data);
+//         Alert.alert(
+//           "Error",
+//           `API Error: ${
+//             error.response.data.message || "Failed to load employees"
+//           }`
+//         );
+//       } else if (error.request) {
+//         console.error("Network Error:", error.request);
+//         Alert.alert("Error", "Network error. Please check your connection.");
+//       } else {
+//         console.error("Request Error:", error.message);
+//         Alert.alert("Error", "Failed to load employees");
+//       }
 //     }
 //   };
 
 //   const loadReportData = async () => {
 //     try {
 //       setLoading(true);
-//       const response = await ApiService.get("/api/reports/attendance", {
-//         params: {
-//           start_date: reportFilters.startDate,
-//           end_date: reportFilters.endDate,
-//           employee_id:
-//             reportFilters.employeeId === "all"
-//               ? undefined
-//               : reportFilters.employeeId,
-//         },
-//       });
+//       console.log("Loading report data with filters:", reportFilters);
+
+//       const params = {
+//         start_date: reportFilters.startDate,
+//         end_date: reportFilters.endDate,
+//       };
+
+//       if (reportFilters.employeeId !== "all") {
+//         params.employee_id = reportFilters.employeeId;
+//       }
+
+//       const response = await ApiService.get("/reports/attendance", { params });
+//       console.log("Attendance Report API Response:", response.data);
 
 //       if (response.data.success) {
 //         setReportData(response.data.data.report);
 //         setReportSummary(response.data.data.summary);
+//       } else {
+//         console.error("Attendance Report API returned success: false");
+//         Alert.alert("Error", "Failed to load report data");
 //       }
 //     } catch (error) {
 //       console.error("Error loading report data:", error);
-//       Alert.alert("Error", "Failed to load report data");
+//       if (error.response) {
+//         console.error("API Response Error:", error.response.data);
+//         Alert.alert(
+//           "Error",
+//           `API Error: ${
+//             error.response.data.message || "Failed to load report data"
+//           }`
+//         );
+//       } else if (error.request) {
+//         console.error("Network Error:", error.request);
+//         Alert.alert("Error", "Network error. Please check your connection.");
+//       } else {
+//         console.error("Request Error:", error.message);
+//         Alert.alert("Error", "Failed to load report data");
+//       }
 //     } finally {
 //       setLoading(false);
 //     }
@@ -173,10 +252,14 @@
 //       }
 
 //       setLoading(true);
-//       const response = await ApiService.post("/api/auth/register", {
+//       console.log("Adding employee:", newEmployee);
+
+//       const response = await ApiService.post("/auth/register", {
 //         ...newEmployee,
 //         password: newEmployee.password || "password123", // Default password if not provided
 //       });
+
+//       console.log("Register API Response:", response.data);
 
 //       if (response.data.success) {
 //         Alert.alert("Success", "Employee added successfully");
@@ -191,13 +274,24 @@
 //           phone: "",
 //         });
 //         await loadEmployees();
+//       } else {
+//         Alert.alert("Error", response.data.message || "Failed to add employee");
 //       }
 //     } catch (error) {
 //       console.error("Error adding employee:", error);
-//       Alert.alert(
-//         "Error",
-//         error.response?.data?.message || "Failed to add employee"
-//       );
+//       if (error.response) {
+//         console.error("API Response Error:", error.response.data);
+//         Alert.alert(
+//           "Error",
+//           error.response.data.message || "Failed to add employee"
+//         );
+//       } else if (error.request) {
+//         console.error("Network Error:", error.request);
+//         Alert.alert("Error", "Network error. Please check your connection.");
+//       } else {
+//         console.error("Request Error:", error.message);
+//         Alert.alert("Error", "Failed to add employee");
+//       }
 //     } finally {
 //       setLoading(false);
 //     }
@@ -214,12 +308,18 @@
 //           style: "destructive",
 //           onPress: async () => {
 //             try {
-//               // You'll need to implement this API endpoint
-//               await ApiService.put(`/api/users/${employeeId}/deactivate`);
+//               console.log("Deactivating employee:", employeeId);
+//               // You'll need to implement this API endpoint on your backend
+//               await ApiService.put(`/users/${employeeId}/deactivate`);
 //               Alert.alert("Success", "Employee deactivated successfully");
 //               await loadEmployees();
 //             } catch (error) {
-//               Alert.alert("Error", "Failed to deactivate employee");
+//               console.error("Error deactivating employee:", error);
+//               if (error.response && error.response.status === 404) {
+//                 Alert.alert("Error", "Deactivate endpoint not implemented yet");
+//               } else {
+//                 Alert.alert("Error", "Failed to deactivate employee");
+//               }
 //             }
 //           },
 //         },
@@ -1428,6 +1528,7 @@
 // });
 
 // export default AdminScreen;
+
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
@@ -1535,7 +1636,29 @@ const AdminScreen = () => {
       console.log("Dashboard API Response:", response.data);
 
       if (response.data.success) {
-        setDashboardStats(response.data.data);
+        // Access data from response.data.data instead of response.data directly
+        const apiData = response.data.data;
+
+        setDashboardStats({
+          today: {
+            total_checkins: apiData.today?.total_checkins || 0,
+            on_time: apiData.today?.on_time || 0,
+            late: apiData.today?.late || 0,
+            still_in_office: apiData.today?.still_in_office || 0,
+            unique_employees: apiData.today?.unique_employees || 0,
+          },
+          monthly: {
+            total_attendance: apiData.monthly?.total_attendance || 0,
+            active_employees: apiData.monthly?.active_employees || 0,
+            avg_working_minutes: parseFloat(
+              apiData.monthly?.avg_working_minutes || 0
+            ),
+            total_late_days: parseInt(apiData.monthly?.total_late_days || 0),
+          },
+          trends: apiData.trends || [],
+          departments: apiData.departments || [],
+          late_arrivals: apiData.late_arrivals || [],
+        });
       } else {
         console.error("Dashboard API returned success: false");
         Alert.alert("Error", "Failed to load dashboard statistics");
@@ -1566,11 +1689,13 @@ const AdminScreen = () => {
     try {
       console.log("Loading employees...");
       const response = await ApiService.get("/users");
-      console.log("Users API Response:", response.data.users);
+      console.log("Users API Response:", response.data);
 
       if (response.data.success) {
-        setEmployees(response.data.users);
-        setFilteredEmployees(response.data.users);
+        // Access users from response.data.data.users instead of response.data.users
+        const users = response.data.data?.users || [];
+        setEmployees(users);
+        setFilteredEmployees(users);
       } else {
         console.error("Users API returned success: false");
         Alert.alert("Error", "Failed to load employees");
@@ -1613,8 +1738,10 @@ const AdminScreen = () => {
       console.log("Attendance Report API Response:", response.data);
 
       if (response.data.success) {
-        setReportData(response.data.data.report);
-        setReportSummary(response.data.data.summary);
+        // Access report data from response.data.data instead of response.data.data
+        const apiData = response.data.data;
+        setReportData(apiData.report || []);
+        setReportSummary(apiData.summary || null);
       } else {
         console.error("Attendance Report API returned success: false");
         Alert.alert("Error", "Failed to load report data");
@@ -1644,11 +1771,13 @@ const AdminScreen = () => {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await Promise.all([
-        loadDashboardData(),
-        loadEmployees(),
-        selectedTab === "reports" && loadReportData(),
-      ]);
+      await Promise.all(
+        [
+          loadDashboardData(),
+          loadEmployees(),
+          selectedTab === "reports" && loadReportData(),
+        ].filter(Boolean)
+      ); // Filter out false values
     } catch (error) {
       console.error("Error refreshing data:", error);
     }
@@ -1820,9 +1949,7 @@ const AdminScreen = () => {
           )}
           {renderStatsCard(
             "Avg Working Hours",
-            `${(
-              parseFloat(dashboardStats.monthly.avg_working_minutes) / 60
-            ).toFixed(1)}h`,
+            `${(dashboardStats.monthly.avg_working_minutes / 60).toFixed(1)}h`,
             "time",
             "#FF9800"
           )}

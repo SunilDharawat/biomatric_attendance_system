@@ -57,16 +57,34 @@ function MainTabNavigator() {
             iconName = focused ? "settings" : "settings-outline";
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName} size={24} color={color} />;
         },
-        tabBarActiveTintColor: "#2196F3",
-        tabBarInactiveTintColor: "gray",
+        tabBarActiveTintColor: "#00BFA5", // Teal accent
+        tabBarInactiveTintColor: "#B0BEC5", // Soft grey-blue
+        tabBarStyle: {
+          backgroundColor: "#FFFFFF",
+          borderTopWidth: 0,
+          elevation: 10,
+          shadowColor: "#000",
+          shadowOpacity: 0.05,
+          shadowRadius: 10,
+          height: 70,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          position: "absolute",
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          marginBottom: 8,
+          color: "#333",
+        },
         headerStyle: {
-          backgroundColor: "#2196F3",
+          backgroundColor: "#00BFA5", // Same accent as active icon
         },
         headerTintColor: "#fff",
         headerTitleStyle: {
-          fontWeight: "bold",
+          fontWeight: "600",
+          fontSize: 20,
         },
       })}
     >
