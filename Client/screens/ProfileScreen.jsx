@@ -38,6 +38,9 @@ const ProfileScreen = () => {
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
+    department: user?.department || "",
+    role: user?.role || "",
+    is_active: user?.is_active || false,
   });
 
   useEffect(() => {
@@ -127,10 +130,17 @@ const ProfileScreen = () => {
     try {
       // Call API to update profile
       // For now, just update local user data
-      updateUser(profileForm);
+      // updateUser(profileForm);
 
-      Alert.alert("Success", "Profile updated successfully");
-      setEditProfileModal(false);
+      const result = await updateUser(profileForm);
+      console.log("Profile update result:", result);
+
+      if (result.success) {
+        Alert.alert("Success", "Profile updated successfully");
+        setEditProfileModal(false);
+      } else {
+        Alert.alert("Error", result.error || "Failed to update profile");
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to update profile");
     } finally {
@@ -258,6 +268,64 @@ const ProfileScreen = () => {
     </View>
   );
 
+  // const renderEditProfileModal = () => (
+  //   <Modal visible={editProfileModal} animationType="slide">
+  //     <View style={styles.modalContainer}>
+  //       <View style={styles.modalHeader}>
+  //         <TouchableOpacity onPress={() => setEditProfileModal(false)}>
+  //           <Text style={styles.modalCancel}>Cancel</Text>
+  //         </TouchableOpacity>
+  //         <Text style={styles.modalTitle}>Edit Profile</Text>
+  //         <TouchableOpacity onPress={handleUpdateProfile}>
+  //           <Text style={styles.modalDone}>Save</Text>
+  //         </TouchableOpacity>
+  //       </View>
+
+  //       <View style={styles.modalContent}>
+  //         <Text style={styles.inputLabel}>Name</Text>
+  //         <TextInput
+  //           style={styles.input}
+  //           value={profileForm.name}
+  //           onChangeText={(text) =>
+  //             setProfileForm({ ...profileForm, name: text })
+  //           }
+  //           placeholder="Name"
+  //         />
+
+  //         <Text style={styles.inputLabel}>Email</Text>
+  //         <TextInput
+  //           style={styles.input}
+  //           value={profileForm.email}
+  //           onChangeText={(text) =>
+  //             setProfileForm({ ...profileForm, email: text })
+  //           }
+  //           placeholder="Email"
+  //           keyboardType="email-address"
+  //         />
+
+  //         <Text style={styles.inputLabel}>Phone</Text>
+  //         <TextInput
+  //           style={styles.input}
+  //           value={profileForm.phone}
+  //           onChangeText={(text) =>
+  //             setProfileForm({ ...profileForm, phone: text })
+  //           }
+  //           placeholder="Phone"
+  //           keyboardType="phone-pad"
+  //         />
+
+  //         {isLoading && (
+  //           <ActivityIndicator
+  //             size="small"
+  //             color="#2196F3"
+  //             style={{ marginTop: 16 }}
+  //           />
+  //         )}
+  //       </View>
+  //     </View>
+  //   </Modal>
+  // );
+
   const renderEditProfileModal = () => (
     <Modal visible={editProfileModal} animationType="slide">
       <View style={styles.modalContainer}>
@@ -272,6 +340,7 @@ const ProfileScreen = () => {
         </View>
 
         <View style={styles.modalContent}>
+          {/* Name (Everyone) */}
           <Text style={styles.inputLabel}>Name</Text>
           <TextInput
             style={styles.input}
@@ -282,17 +351,7 @@ const ProfileScreen = () => {
             placeholder="Name"
           />
 
-          <Text style={styles.inputLabel}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={profileForm.email}
-            onChangeText={(text) =>
-              setProfileForm({ ...profileForm, email: text })
-            }
-            placeholder="Email"
-            keyboardType="email-address"
-          />
-
+          {/* Phone (Everyone) */}
           <Text style={styles.inputLabel}>Phone</Text>
           <TextInput
             style={styles.input}
@@ -304,6 +363,62 @@ const ProfileScreen = () => {
             keyboardType="phone-pad"
           />
 
+          {/* Extra fields only for Admin */}
+          {user?.role === "admin" && (
+            <>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput
+                style={styles.input}
+                value={profileForm.email}
+                onChangeText={(text) =>
+                  setProfileForm({ ...profileForm, email: text })
+                }
+                placeholder="Email"
+                keyboardType="email-address"
+              />
+
+              <Text style={styles.inputLabel}>Department</Text>
+              <TextInput
+                style={styles.input}
+                value={profileForm.department || ""}
+                onChangeText={(text) =>
+                  setProfileForm({ ...profileForm, department: text })
+                }
+                placeholder="Department"
+              />
+
+              <Text style={styles.inputLabel}>Role</Text>
+              <TextInput
+                style={styles.input}
+                value={profileForm.role || ""}
+                onChangeText={(text) =>
+                  setProfileForm({ ...profileForm, role: text })
+                }
+                placeholder="Role (e.g., user/admin)"
+              />
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 16,
+                }}
+              >
+                <Text style={[styles.inputLabel, { flex: 1 }]}>
+                  Active Status
+                </Text>
+                <Switch
+                  value={profileForm.is_active ?? true}
+                  onValueChange={(value) =>
+                    setProfileForm({ ...profileForm, is_active: value })
+                  }
+                  trackColor={{ false: "#767577", true: "#4CAF50" }}
+                />
+              </View>
+            </>
+          )}
+
+          {/* Loader */}
           {isLoading && (
             <ActivityIndicator
               size="small"

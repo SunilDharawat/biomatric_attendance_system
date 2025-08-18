@@ -278,7 +278,7 @@ class ApiService {
   }
 
   async updateUser(userId, userData) {
-    return this.put(`/admin/users/${userId}`, userData);
+    return this.put(`/api/users/${userId}`, userData);
   }
 
   async deleteUser(userId) {

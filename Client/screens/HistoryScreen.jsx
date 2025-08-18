@@ -61,60 +61,6 @@ const HistoryScreen = () => {
     }
   };
 
-  // const renderAttendanceItem = ({ item }) => (
-  //   <View style={styles.attendanceItem}>
-  //     <View style={styles.dateContainer}>
-  //       <Text style={styles.dateText}>{moment(item.date).format("DD")}</Text>
-  //       <Text style={styles.monthText}>{moment(item.date).format("MMM")}</Text>
-  //       <Text style={styles.dayText}>{moment(item.date).format("ddd")}</Text>
-  //     </View>
-
-  //     <View style={styles.attendanceDetails}>
-  //       <View style={styles.statusContainer}>
-  //         <View
-  //           style={[
-  //             styles.statusDot,
-  //             { backgroundColor: getAttendanceStatusColor(item.status) },
-  //           ]}
-  //         />
-  //         <Text style={styles.statusText}>
-  //           {item.status?.toUpperCase() || "N/A"}
-  //         </Text>
-  //       </View>
-
-  //       <View style={styles.timeContainer}>
-  //         <View style={styles.timeItem}>
-  //           <Ionicons name="log-in" size={16} color="#4CAF50" />
-  //           <Text style={styles.timeText}>
-  //             {item.check_in_time
-  //               ? formatAttendanceTime(item.check_in_time)
-  //               : "--:--"}
-  //           </Text>
-  //         </View>
-  //         <View style={styles.timeItem}>
-  //           <Ionicons name="log-out" size={16} color="#FF9800" />
-  //           <Text style={styles.timeText}>
-  //             {item.check_out_time
-  //               ? formatAttendanceTime(item.check_out_time)
-  //               : "--:--"}
-  //           </Text>
-  //         </View>
-  //       </View>
-
-  //       {item.minutes_worked && (
-  //         <Text style={styles.workingHours}>
-  //           Working time: {Math.floor(item.minutes_worked / 60)}h{" "}
-  //           {item.minutes_worked % 60}m
-  //         </Text>
-  //       )}
-  //     </View>
-
-  //     <TouchableOpacity style={styles.moreButton}>
-  //       <Ionicons name="chevron-forward" size={20} color="#999" />
-  //     </TouchableOpacity>
-  //   </View>
-  // );
-
   const renderAttendanceItem = ({ item }) => (
     <View style={styles.attendanceItem}>
       <View style={styles.dateContainer}>

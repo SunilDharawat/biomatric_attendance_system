@@ -213,11 +213,45 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUser = (userData) => {
-    dispatch({
-      type: AUTH_ACTIONS.UPDATE_USER,
-      payload: userData,
-    });
+  // const updateUser = (userData) => {
+  //   dispatch({
+  //     type: AUTH_ACTIONS.UPDATE_USER,
+  //     payload: userData,
+  //   });
+  // };
+
+  const updateUser = async (userData) => {
+    try {
+      // Call backend API
+      const response = await ApiService.put(
+        `/users/${state.user.id}`,
+        userData
+      );
+
+      console.log(response);
+
+      if (response.success) {
+        // Update local state
+        dispatch({
+          type: AUTH_ACTIONS.UPDATE_USER,
+          payload: userData,
+        });
+
+        // Update SecureStore so data persists after app restart
+        const updatedUser = { ...state.user, ...userData };
+        await SecureStore.setItemAsync("userData", JSON.stringify(updatedUser));
+
+        return { success: true };
+      } else {
+        return { success: false, error: response.message };
+      }
+    } catch (error) {
+      console.error("Update user API error:", error);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to update user",
+      };
+    }
   };
 
   const changePassword = async (currentPassword, newPassword) => {
