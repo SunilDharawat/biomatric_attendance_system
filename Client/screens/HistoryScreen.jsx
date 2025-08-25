@@ -311,6 +311,7 @@ const HistoryScreen = () => {
       {renderHeader()}
 
       <FlatList
+        style={{ marginBottom: 70 }}
         data={attendanceHistory}
         keyExtractor={(item) => item.id?.toString() || item.date}
         renderItem={renderAttendanceItem}

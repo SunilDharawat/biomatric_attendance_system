@@ -1631,13 +1631,11 @@ const AdminScreen = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      console.log("Loading dashboard data...");
       const response = await ApiService.get("/reports/dashboard");
-      console.log("Dashboard API Response:", response.data);
 
-      if (response.data.success) {
+      if (response.data) {
         // Access data from response.data.data instead of response.data directly
-        const apiData = response.data.data;
+        const apiData = response.data;
 
         setDashboardStats({
           today: {
@@ -1656,12 +1654,12 @@ const AdminScreen = () => {
             total_late_days: parseInt(apiData.monthly?.total_late_days || 0),
           },
           trends: apiData.trends || [],
-          departments: apiData.departments || [],
+          departments: apiData.departments,
           late_arrivals: apiData.late_arrivals || [],
         });
       } else {
         console.error("Dashboard API returned success: false");
-        Alert.alert("Error", "Failed to load dashboard statistics");
+        Alert.alert("Error", "Failed to load data");
       }
     } catch (error) {
       console.error("Error loading dashboard data:", error);
@@ -1687,13 +1685,11 @@ const AdminScreen = () => {
 
   const loadEmployees = async () => {
     try {
-      console.log("Loading employees...");
       const response = await ApiService.get("/users");
-      console.log("Users API Response:", response.data);
 
-      if (response.data.success) {
+      if (response.data) {
         // Access users from response.data.data.users instead of response.data.users
-        const users = response.data.data?.users || [];
+        const users = response.data?.users || [];
         setEmployees(users);
         setFilteredEmployees(users);
       } else {
@@ -1723,7 +1719,6 @@ const AdminScreen = () => {
   const loadReportData = async () => {
     try {
       setLoading(true);
-      console.log("Loading report data with filters:", reportFilters);
 
       const params = {
         start_date: reportFilters.startDate,
@@ -1735,11 +1730,10 @@ const AdminScreen = () => {
       }
 
       const response = await ApiService.get("/reports/attendance", { params });
-      console.log("Attendance Report API Response:", response.data);
 
-      if (response.data.success) {
+      if (response.data) {
         // Access report data from response.data.data instead of response.data.data
-        const apiData = response.data.data;
+        const apiData = response.data;
         setReportData(apiData.report || []);
         setReportSummary(apiData.summary || null);
       } else {
@@ -2606,6 +2600,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 20,
+    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 20,
@@ -2877,6 +2872,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
+    marginBottom: 60,
   },
   reportItem: {
     borderBottomWidth: 1,
