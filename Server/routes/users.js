@@ -7,6 +7,9 @@ const {
   isAdmin,
   canAccessUserData,
 } = require("../middlewares/auth");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 const router = express.Router();
 
@@ -464,6 +467,65 @@ router.delete(
       res.status(500).json({
         success: false,
         message: "Server error removing device",
+      });
+    }
+  }
+);
+
+// Set up storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(__dirname, "../uploads/profile_photos");
+    fs.mkdirSync(uploadPath, { recursive: true }); // ensure directory exists
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const uniqueName = `user_${req.params.userId}_${Date.now()}${ext}`;
+    cb(null, uniqueName);
+  },
+});
+
+// File filter
+const fileFilter = function (req, file, cb) {
+  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type. Only JPEG and PNG are allowed."), false);
+  }
+};
+
+const upload = multer({ storage: storage, fileFilter: fileFilter });
+
+// @route   POST /api/users/:userId/upload-photo
+// @desc    Upload profile photo for user
+// @access  Private (Admin or self)
+router.post(
+  "/:userId/upload-photo",
+  authenticateToken,
+  canAccessUserData,
+  upload.single("photo"),
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const photoPath = `/uploads/profile_photos/${req.file.filename}`;
+
+      await executeQuery(
+        `UPDATE users SET profile_photo = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+        [photoPath, userId]
+      );
+
+      res.json({
+        success: true,
+        message: "Profile photo uploaded successfully",
+        data: { profile_photo: photoPath },
+      });
+    } catch (err) {
+      console.error("Profile photo upload error:", err);
+      res.status(500).json({
+        success: false,
+        message: "Error uploading profile photo",
       });
     }
   }

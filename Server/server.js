@@ -4,6 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
+const path = require("path");
 
 const authRoutes = require("./routes/auth");
 const attendanceRoutes = require("./routes/attendance");
@@ -60,6 +61,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // 404 handler - FIXED: Named the wildcard parameter
 app.use((req, res) => {

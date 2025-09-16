@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import ApiService from "../services/ApiService";
 import { useAuth } from "./AuthContext";
+import * as Device from "expo-device";
 
 // Initial state
 const initialState = {
@@ -190,10 +191,20 @@ export const AttendanceProvider = ({ children }) => {
       dispatch({ type: ATTENDANCE_ACTIONS.SET_LOADING, payload: true });
       dispatch({ type: ATTENDANCE_ACTIONS.CLEAR_ERROR });
 
+      // Auto-fetch device info if not provided
+      const resolvedDeviceId =
+        deviceId ||
+        Device.osInternalBuildId ||
+        Device.modelId ||
+        "unknown-device-id";
+      const resolvedDeviceName =
+        Device.deviceName || Device.modelName || "Unknown Device";
+
       const response = await ApiService.post("/attendance/checkin", {
         latitude,
         longitude,
-        device_id: deviceId,
+        device_id: resolvedDeviceId,
+        device_name: resolvedDeviceName,
         notes,
       });
 

@@ -27,6 +27,8 @@ const ProfileScreen = () => {
   const [changePasswordModal, setChangePasswordModal] = useState(false);
   const [editProfileModal, setEditProfileModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [helpModalVisible, setHelpModalVisible] = useState(false);
+  const [aboutModalVisible, setAboutModalVisible] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -245,13 +247,19 @@ const ProfileScreen = () => {
         <Ionicons name="chevron-forward" size={20} color="#999" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.actionItem}>
+      <TouchableOpacity
+        style={styles.actionItem}
+        onPress={() => setHelpModalVisible(true)}
+      >
         <Ionicons name="help-circle" size={24} color="#4CAF50" />
         <Text style={styles.actionTitle}>Help & Support</Text>
         <Ionicons name="chevron-forward" size={20} color="#999" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.actionItem}>
+      <TouchableOpacity
+        style={styles.actionItem}
+        onPress={() => setAboutModalVisible(true)}
+      >
         <Ionicons name="information-circle" size={24} color="#FF9800" />
         <Text style={styles.actionTitle}>About App</Text>
         <Ionicons name="chevron-forward" size={20} color="#999" />
@@ -490,6 +498,58 @@ const ProfileScreen = () => {
     </Modal>
   );
 
+  const renderHelpModal = () => (
+    <Modal visible={helpModalVisible} animationType="slide">
+      <View style={styles.modalContainer}>
+        <View style={styles.modalHeader}>
+          <TouchableOpacity onPress={() => setHelpModalVisible(false)}>
+            <Text style={styles.modalCancel}>Close</Text>
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Help & Support</Text>
+          <View style={{ width: 50 }} />
+        </View>
+        <ScrollView style={styles.modalContent}>
+          <Text style={styles.inputLabel}>FAQs</Text>
+
+          <Text style={styles.input}>
+            • How to reset password?{"\n"}
+            Go to "Change Password" section and follow the instructions.{"\n\n"}
+            • How to contact support?{"\n"}
+            You can reach out to our team using the contact info below.
+          </Text>
+
+          <Text style={styles.inputLabel}>Contact Us</Text>
+          <Text style={styles.input}>
+            Email: support@sysassist.com{"\n"}
+            Phone: +91 1234567890
+          </Text>
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+
+  const renderAboutModal = () => (
+    <Modal visible={aboutModalVisible} animationType="slide">
+      <View style={styles.modalContainer}>
+        <View style={styles.modalHeader}>
+          <TouchableOpacity onPress={() => setAboutModalVisible(false)}>
+            <Text style={styles.modalCancel}>Close</Text>
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>About App</Text>
+          <View style={{ width: 50 }} />
+        </View>
+        <ScrollView style={styles.modalContent}>
+          <Text style={styles.input}>
+            Version: 1.0.0{"\n\n"}
+            This app is designed to help you manage your attendance, receive
+            notifications, and keep your profile updated.{"\n\n"}
+            Developed by Team SysAssist IT Solutions, Indore.
+          </Text>
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+
   return (
     <ScrollView style={styles.container}>
       {renderUserInfo()}
@@ -497,6 +557,8 @@ const ProfileScreen = () => {
       {renderActionsSection()}
       {renderEditProfileModal()}
       {renderChangePasswordModal()}
+      {renderHelpModal()}
+      {renderAboutModal()}
     </ScrollView>
   );
 };

@@ -1795,7 +1795,7 @@ const AdminScreen = () => {
 
       console.log("Register API Response:", response.data);
 
-      if (response.data.success) {
+      if (response.data) {
         Alert.alert("Success", "Employee added successfully");
         setShowAddEmployeeModal(false);
         setNewEmployee({

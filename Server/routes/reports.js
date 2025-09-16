@@ -224,13 +224,6 @@ router.get("/dashboard", authenticateToken, isAdmin, async (req, res) => {
       [thisMonth]
     );
 
-    console.log("dashboard", todayStats[0]);
-    console.log("dashboard", monthlyStats[0]);
-    console.log("dashboard", departmentStats);
-    console.log("dashboard", attendanceTrends);
-    console.log("dashboard", topPerformers);
-    console.log("dashboard", lateArrivals);
-
     res.json({
       success: true,
       data: {

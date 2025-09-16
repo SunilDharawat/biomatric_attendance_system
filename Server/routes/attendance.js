@@ -28,7 +28,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 // Helper function to get office location from settings
 const getOfficeLocation = async () => {
   const rules = await executeQuery(
-    "SELECT office_latitude, office_longitude, location_radius_meters FROM attendance_rules WHERE is_active = true LIMIT 1"
+    "SELECT office_latitude, office_longitude, location_radius_meters,check_in_time, check_out_time,late_threshold_minutes FROM attendance_rules WHERE is_active = true LIMIT 1"
   );
 
   if (rules.length > 0) {
@@ -36,6 +36,9 @@ const getOfficeLocation = async () => {
       latitude: rules[0].office_latitude,
       longitude: rules[0].office_longitude,
       radius: rules[0].location_radius_meters,
+      checkInTime: rules[0].check_in_time,
+      checkOutTime: rules[0].check_out_time,
+      lateThreshold: rules[0].late_threshold_minutes,
     };
   }
 
@@ -97,14 +100,36 @@ router.post("/checkin", authenticateToken, async (req, res) => {
       });
     }
 
-    // Determine if check-in is late
-    const checkInTime = new Date();
-    const checkInTimeStr = checkInTime.toTimeString().substring(0, 8);
-    const workStartTime = "09:00:00"; // Should come from settings
+    // // Determine if check-in is late
+    // const checkInTime = new Date();
+    // const checkInTimeStr = checkInTime.toTimeString().substring(0, 8);
+    // const workStartTime = officeLocation.checkInTime; // 11:30:00  officeLocation have all details of settings
+    // const lateThreshold = officeLocation.lateThreshold; // 15  as minitues
+
+    // let status = "present";
+    // if (checkInTimeStr > "09:15:00") {
+    //   // 15 minutes late threshold
+    //   status = "late";
+    // }
+
+    const checkInTime = new Date(); // Actual check-in timestamp
+    const workStartTimeStr = officeLocation.checkInTime; // e.g., "11:30:00"
+    const lateThreshold = officeLocation.lateThreshold; // e.g., 15 (minutes)
+
+    // Parse workStartTime string into Date
+    const [startHour, startMinute, startSecond] = workStartTimeStr
+      .split(":")
+      .map(Number);
+    const lateCutoff = new Date(checkInTime); // create a copy with the same date
+    lateCutoff.setHours(
+      startHour,
+      startMinute + lateThreshold,
+      startSecond || 0,
+      0
+    ); // Add lateThreshold minutes
 
     let status = "present";
-    if (checkInTimeStr > "09:15:00") {
-      // 15 minutes late threshold
+    if (checkInTime > lateCutoff) {
       status = "late";
     }
 
